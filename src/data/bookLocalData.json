@@ -1,0 +1,122 @@
+[
+  {
+    "title": "The Silent Forest",
+    "description": "A gripping tale of survival and redemption set in the heart of an ancient forest.",
+    "author": "Elena Marquez",
+    "publisher": "GreenLeaf Press",
+    "price": 14.99,
+    "category": "Fiction",
+    "stock": 12,
+    "image": "https://example.com/images/silent-forest.jpg",
+    "pages": 320,
+    "language": "English"
+  },
+  {
+    "title": "JavaScript Mastery",
+    "description": "A comprehensive guide to modern JavaScript for developers at all levels.",
+    "author": "Liam Chen",
+    "publisher": "TechNova Publishing",
+    "price": 29.99,
+    "category": "Programming",
+    "stock": 25,
+    "image": "https://example.com/images/js-mastery.jpg",
+    "pages": 480,
+    "language": "English"
+  },
+  {
+    "title": "The Art of Calm",
+    "description": "Learn mindfulness and meditation techniques to bring peace to your daily life.",
+    "author": "Dr. Maya Patel",
+    "publisher": "Serenity Books",
+    "price": 18.5,
+    "category": "Self-Help",
+    "stock": 10,
+    "image": "https://example.com/images/art-of-calm.jpg",
+    "pages": 240,
+    "language": "English"
+  },
+  {
+    "title": "Hidden Oceans",
+    "description": "Explore the mysterious and beautiful world beneath the sea.",
+    "author": "Oliver Bennett",
+    "publisher": "BlueWave Press",
+    "price": 22.0,
+    "category": "Science",
+    "stock": 8,
+    "image": "https://example.com/images/hidden-oceans.jpg",
+    "pages": 300,
+    "language": "English"
+  },
+  {
+    "title": "Cooking Around the World",
+    "description": "Discover 100 international recipes from five continents.",
+    "author": "Sofia Nguyen",
+    "publisher": "Culinary House",
+    "price": 27.99,
+    "category": "Cooking",
+    "stock": 15,
+    "image": "https://example.com/images/cooking-world.jpg",
+    "pages": 350,
+    "language": "English"
+  },
+  {
+    "title": "The Future of AI",
+    "description": "An insightful look into how artificial intelligence is reshaping humanity.",
+    "author": "Dr. Aaron Park",
+    "publisher": "NeuralMind Press",
+    "price": 24.5,
+    "category": "Technology",
+    "stock": 20,
+    "image": "https://example.com/images/future-ai.jpg",
+    "pages": 280,
+    "language": "English"
+  },
+  {
+    "title": "Whispers of the Past",
+    "description": "A historical novel that uncovers a family’s secrets spanning generations.",
+    "author": "Isabella Clarke",
+    "publisher": "MapleLeaf Books",
+    "price": 16.75,
+    "category": "Historical Fiction",
+    "stock": 9,
+    "image": "https://example.com/images/whispers-past.jpg",
+    "pages": 410,
+    "language": "English"
+  },
+  {
+    "title": "Building APIs with Node.js",
+    "description": "Step-by-step guide to designing and implementing RESTful APIs using Node.js and Express.",
+    "author": "Ravi Das",
+    "publisher": "CodePath Media",
+    "price": 32.0,
+    "category": "Programming",
+    "stock": 18,
+    "image": "https://example.com/images/nodejs-apis.jpg",
+    "pages": 360,
+    "language": "English"
+  },
+  {
+    "title": "Journey to the Stars",
+    "description": "A fascinating exploration of our universe, from the Milky Way to distant galaxies.",
+    "author": "Dr. Lena Hoffman",
+    "publisher": "Cosmic Reads",
+    "price": 20.99,
+    "category": "Astronomy",
+    "stock": 14,
+    "image": "https://example.com/images/journey-stars.jpg",
+    "pages": 290,
+    "language": "English"
+  },
+  {
+    "title": "Minimalist Living",
+    "description": "Practical advice for decluttering your home and simplifying your life.",
+    "author": "Noah Edwards",
+    "publisher": "Simple Life Publishing",
+    "price": 15.99,
+    "category": "Lifestyle",
+    "stock": 22,
+    "image": "https://example.com/images/minimalist-living.jpg",
+    "pages": 210,
+    "language": "English"
+  }
+]
