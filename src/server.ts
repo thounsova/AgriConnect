@@ -1,22 +1,19 @@
-import express from "express";
-import connectDB from "@/config/database";
+import app from '@/app';
+import connectDB from '@/config/database';
 
-import userRouter from "./routes/userRoutes";
-
-const app = express();
-
-app.use(express.json());
-
-app.use(express.urlencoded({ extended: true }));
-
-app.use("/api", userRouter);
+const PORT = process.env.PORT || 3000;
 
 connectDB()
-  .then(() => console.log("Database connected"))
-  .catch((err) => console.error("Database connection failed:", err));
+  .then(() => {
+    console.log('Database connected');
 
-const PORT = process.env.PORT;
-
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
-});
+    // Start server only after DB connection
+    app.listen(PORT, () => {
+      console.log(`✅ Server running at http://localhost:${PORT}`);
+      console.log(`Swagger docs at http://localhost:${PORT}/api-docs`);
+    });
+  })
+  .catch((err) => {
+    console.error('Database connection failed:', err);
+    process.exit(1);
+  });

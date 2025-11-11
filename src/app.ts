@@ -1,16 +1,24 @@
-import express from 'express';
-import farmRoutes from './routes/farm';
-import { setupSwagger } from './swagger';
+import express, { Application } from 'express';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJSDoc from 'swagger-jsdoc';
+import cors from 'cors';
 
-const app = express();
+import { swaggerOptions } from '@/swagger';
+import userRoutes from '@/routes/userRoutes';
 
+
+const app: Application = express();
+
+// Middleware
 app.use(express.json());
-app.use(farmRoutes);
+app.use(cors()); // Enable CORS
 
-// Swagger
-setupSwagger(app);
 
-app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000');
-  console.log('Swagger docs at http://localhost:3000/api-docs');
-});
+// Swagger setup
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Routes
+app.use('/api', userRoutes);
+
+export default app;

@@ -1,13 +1,8 @@
-// src/types/swagger-jsdoc.d.ts
+// Declare the module for swagger-jsdoc
 declare module 'swagger-jsdoc' {
-  import { OpenAPIV3 } from 'openapi-types';
-
-  interface SwaggerJSDocOptions {
-    swaggerDefinition: OpenAPIV3.Document;
-    apis: string[];
-  }
-
-  function swaggerJSDoc(options: SwaggerJSDocOptions): OpenAPIV3.Document;
-
+  import { Options } from 'swagger-jsdoc';
+  const swaggerJSDoc: (options: Options) => any;
   export = swaggerJSDoc;
+
+  export type SwaggerOptions = Options;
 }
