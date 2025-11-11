@@ -5,54 +5,7 @@ import { Request, Response } from "express";
 import { handleError } from "@/utils/response-util";
 import jwt from "jsonwebtoken";
 
-export const registerService = async (req: Request, res: Response) => {
-  try {
-    const { full_name, user_name, email, password, role } = req.body;
 
-    // Check exist User
-    const existingUser = await userModel.findOne({ email });
-
-    if (existingUser) {
-      return handleError(res, 401, "User already exists");
-    }
-
-    // Hash password
-    const hashPassword = await bcrypt.hash(password, 10);
-
-    const newUser = new userModel({
-      full_name,
-      user_name,
-      email,
-      password: hashPassword,
-      role: role || "user",
-    });
-
-    await newUser.save();
-
-    const token = generateTokens(
-      newUser.id.toString(),
-      newUser.email,
-      newUser.role || "user"
-    );
-
-    return res.status(201).json({
-      message: "User registered successfully",
-      data: {
-        user: {
-          _id: newUser._id,
-          full_name: newUser.full_name,
-          user_name: newUser.user_name,
-          email: newUser.email,
-          role: newUser.role || "user",
-        },
-        token,
-      },
-    });
-  } catch (error) {
-    console.error(error);
-    return handleError(res, 500, "An error occurred during registration");
-  }
-};
 
 export const loginService = async (req: Request, res: Response) => {
     const { email, password } = req.body;
@@ -93,7 +46,7 @@ export const loginService = async (req: Request, res: Response) => {
                 user: {
                     _id: existUser._id,
                     full_name: existUser.full_name,
-                    user_name: existUser.user_name,
+                    user_name: existUser.address,
                     email: existUser.email,
                     phone: existUser.phone,
                     role: existUser.role,

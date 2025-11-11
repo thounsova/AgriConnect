@@ -1,7 +1,7 @@
 import express from "express";
 import connectDB from "@/config/database";
-import Router from "@/routes/index";
-import "@/models/bookModel"; // in server.ts or cartService.ts
+
+import userRouter from "./routes/userRoutes";
 
 const app = express();
 
@@ -9,7 +9,7 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api", Router);
+app.use("/api", userRouter);
 
 connectDB()
   .then(() => console.log("Database connected"))

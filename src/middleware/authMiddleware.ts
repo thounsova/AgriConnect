@@ -4,91 +4,73 @@ import { AuthUser } from "@/types/auth-type";
 import { handleError } from "@/utils/response-util";
 
 declare global {
-  namespace Express {
-    interface Request {
-      user?: AuthUser;
+  // Extend Express Request interface to include user property
+    namespace Express {
+        interface Request {
+            user?: AuthUser;
+        }
     }
-  }
 }
+// Middleware to authenticate and authorize users
+export const authMiddleware = (req : Request, res : Response, next : NextFunction): void | Response => {
+ try {
+  const authheader = req.headers.authorization;
+  if (!authheader || !authheader.startsWith("Bearer ")) {
+    return handleError(res, 401, "Unauthorized: No token provided");
 
-export const authMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void | Response => {
-  try {
-    const authHeader = req.headers.authorization;
+  }
+  // check token
+  const token = authheader?.split("")[1];
+  const secretKey = process.env.JWT_ACCESS_SECRET as string;
+  if (!secretKey) {
+    return handleError(res, 401, "Unauthorized: No token provided");
+  }
 
-    if (!authHeader?.startsWith("Bearer ")) {
-      return handleError(res, 401, "Unauthorized");
+  // Verify token
+  const decoded = jwt.verify(token, secretKey) as JwtPayload;
+  // Validate decoded token
+   if (!decoded?._id || !decoded?.email || !decoded?.role) {
+      return handleError(res, 400, "Invalid token");
     }
-
-    const token = authHeader?.split(" ")[1];
-    const secret = process.env.JWT_ACCESS_SECRET;
-
-    if (!secret) {
-      return handleError(res, 401, "Unauthorized");
-    }
-
-    const decoded = jwt.verify(token, secret) as JwtPayload & AuthUser;
-
-        if (!decoded?._id || !decoded?.email || !decoded.role) {
-            return handleError(res, 400, "Invalid token");
-        }
-
-        req.user = {
-            _id: decoded._id,
-            email: decoded.email,
-            role: decoded.role,
-        }
-
+   //request user save info
+   req.user = {
+      _id: decoded._id,
+      email: decoded.email,
+      role: decoded.role,
+   };
+    // Proceed to next middleware or route handler
     next();
-    
-  } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      return handleError(
-        res,
-        401,
-        "Access token expired. Please refresh your token."
-      );
-    }
 
+
+}
+catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
-      return handleError(res, 401, "Invalid or malformed token.");
+      return handleError(res, 401, "Unauthorized: Invalid token");
     }
-
-    console.error("Unexpected error:", error);
-    return handleError(res, 500, "Unexpected server error.");
+    console.error("Authentication error:", error);
+    return handleError(res, 500, "Internal server error");
   }
 };
 
 export const checkRoleMiddleware = (...allowedRoles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
+      // check if user is authenticated
       if (!req.user) {
         return handleError(res, 401, "Unauthorized.");
       }
 
-      // Check if role is allowed
+      // check if user has one of the allowed roles
       if (!allowedRoles.includes(req.user.role)) {
         return handleError(res, 403, "Access forbidden.");
       }
 
-      if (!req.user) {
-        return handleError(res, 401, "Unauthorized.");
-      }
-
-      // Check if role is allowed
-      if (!allowedRoles.includes(req.user.role)) {
-        return handleError(res, 403, "Access forbidden.");
-      }
-
-            
-            next();
-
-        } catch (error) {
-            console.error(error);
-            return handleError(res, 500, "Unexpected error occurred");
-        }
-    };
+      // Proceed to next middleware or route handler
+      next();
+    } catch (error) {
+      console.error(error);
+      return handleError(res, 500, "Unexpected error occurred");
+    }
+  };
 };
+
