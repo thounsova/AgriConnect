@@ -1,18 +1,35 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 
-// Option 1: Let TypeScript infer the type
 export const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'My API',
+      title: 'My API AGRICONECT',
       version: '1.0.0',
       description: 'Swagger documentation example',
     },
-    servers: [{ url: 'http://localhost:5000' }],
+    servers: [
+      {
+        url: 'http://localhost:5000',
+        description: 'Local server',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        BearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT', // optional, for clarity
+        },
+      },
+    },
+    security: [
+      {
+        BearerAuth: [], // Apply globally to all routes that support it
+      },
+    ],
   },
-  apis: ['./src/routes/*.ts'],
+  apis: ['./src/routes/*.ts'], // your route files
 };
 
-// Optionally create swaggerSpec here or in app.ts
 export const swaggerSpec = swaggerJSDoc(swaggerOptions);
