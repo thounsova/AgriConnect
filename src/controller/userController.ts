@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { addFarmerservice } from "@/service/userService";
+import { getAllUserService } from "@/service/userService"; // import your service
 
-export const addFarmerController = async (req: Request, res: Response) => {
-  return await addFarmerservice(req, res);
-}
-
+// Controller for getting all users
+export const getAllUserController = async (req: Request, res: Response) => {
+  return getAllUserService(req, res);
+};
