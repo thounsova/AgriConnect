@@ -5,7 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import { swaggerOptions } from '@/swagger';
 import authRoute from '@/routes/authRoutes';
-import userRoute from '@/routes/userRoute';
+// import userRoute from '@/routes/userRoute';
 
 const PORT = process.env.PORT || 3000;
 const app: Application = express();
@@ -25,7 +25,7 @@ connectDB()
     
     // Routes
     app.use('/api', authRoute);
-    app.use('/api', userRoute);
+    // app.use('/api', userRoute);
 
     // Start server only after DB connection
     app.listen(PORT, () => {
