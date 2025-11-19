@@ -1,11 +1,10 @@
 import { Router } from "express";
 import {
   addFarmerController,
-
-  logoutController,
+  loginController,
+  logoutController
  
 } from "@/controller/authController";
-import { addRoleController, removeRoleController } from "@/controller/roleController";
 const router = Router();
 
 /**
@@ -92,84 +91,23 @@ router.post("/Create-user", addFarmerController);
  *       500:
  *         description: Server error
  */
-// router.post("/login", loginController);
+router.post("/login", loginController);
 
-// /**
-//  * @swagger
-//  * /api/logout:
-//  *   post:
-//  *     summary:  logout
-//  *     tags: [Admin]
-//  *     responses:
-//  *       200:
-//  *         description: Logout successful
-//  *       500:
-//  *         description: Server error
-//  */
-// router.post("/logout", logoutController);
+/**
+ * @swagger
+ * /api/logout:
+ *   post:
+ *     summary:  logout
+ *     tags: [Admin]
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *       500:
+ *         description: Server error
+ */
+router.post("/logout", logoutController);
 
-// /**
-//  * @swagger
-//  * /api/add-role:
-//  *   post:
-//  *     summary: Add a role to a user
-//  *     tags: [Admin]
-//  *     requestBody:
-//  *       required: true
-//  *       content:
-//  *         application/json:
-//  *           schema:
-//  *             type: object
-//  *             required:
-//  *               - userId
-//  *               - role
-//  *             properties:
-//  *               userId:
-//  *                 type: string
-//  *                 example: "64f123abc..."
-//  *               role:
-//  *                 type: string
-//  *                 example: "admin"
-//  *     responses:
-//  *       200:
-//  *         description: Role added successfully
-//  *       404:
-//  *         description: User not found
-//  *       500:
-//  *         description: Server error
-//  */
-// router.post("/add-role", addRoleController);
 
-// /**
-//  * @swagger
-//  * /api/remove-role:
-//  *   post:
-//  *     summary: Remove a role from a user
-//  *     tags: [Admin]
-//  *     requestBody:
-//  *       required: true
-//  *       content:
-//  *         application/json:
-//  *           schema:
-//  *             type: object
-//  *             required:
-//  *               - userId
-//  *               - role
-//  *             properties:
-//  *               userId:
-//  *                 type: string
-//  *                 example: "64f123abc..."
-//  *               role:
-//  *                 type: string
-//  *                 example: "farmer"
-//  *     responses:
-//  *       200:
-//  *         description: Role removed successfully
-//  *       404:
-//  *         description: User not found
-//  *       500:
-//  *         description: Server error
-//  */
-// router.post("/remove-role", removeRoleController);
+
 
 export default router;

@@ -7,9 +7,9 @@ export interface IRole extends Document {
 }
 
 const roleSchema = new Schema<IRole>({
-  name: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
   dicription: { type: String },
   
 });
 
-export const roleModel = mongoose.model<IRole>("Role", roleSchema);
+export const roleModel = mongoose.model<IRole>("roles", roleSchema);

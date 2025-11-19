@@ -17,39 +17,51 @@ async function seedAdmin() {
     connection = await mongoose.connect(mongoUri);
     console.log("✅ Connected to MongoDB");
 
-    // 1️⃣ Seed Admin role
-    let adminRole = await roleModel.findOne({ name: "Admin" });
+    // Read admin info from env
+    const adminEmail = process.env.ADMIN_EMAIL ;
+    const adminPassword = process.env.ADMIN_PASSWORD ;
+    const adminFullName = process.env.ADMIN_FULL_NAME ;
+    const adminPhone = process.env.ADMIN_PHONE ;
+    const adminAddress = process.env.ADMIN_ADDRESS ;
+    const adminRoleName = process.env.ADMIN_ROLE_NAME ;
+
+    // Validate required admin env vars so TypeScript can narrow types
+    if (!adminEmail) throw new Error("ADMIN_EMAIL missing in .env");
+    if (!adminPassword) throw new Error("ADMIN_PASSWORD missing in .env");
+    if (!adminFullName) throw new Error("ADMIN_FULL_NAME missing in .env");
+    if (!adminRoleName) throw new Error("ADMIN_ROLE_NAME missing in .env");
+
+    // 1️ Seed Admin role
+    let adminRole = await roleModel.findOne({ name: adminRoleName });
     if (!adminRole) {
       adminRole = await roleModel.create({
-        name: "Admin",
+        name: adminRoleName,
         description: "Has full access to the system",
       });
-      console.log("Role Admin created");
+      console.log(`Role ${adminRoleName} created`);
     } else {
-      console.log("Role Admin already exists");
+      console.log(`Role ${adminRoleName} already exists`);
     }
 
-    // 2️⃣ Seed Admin user
-    const adminEmail = "admin@gmail.com";
+    // 2️ Seed Admin user
     let adminUser = await userModel.findOne({ email: adminEmail });
-
     if (!adminUser) {
-      const hashedPassword = await bcrypt.hash("Admin@123", 10);
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
       adminUser = await userModel.create({
-        full_name: "Super Admin",
+        full_name: adminFullName,
         email: adminEmail,
         password: hashedPassword,
-        phone: "+85599999999",
-        address: "Phnom Penh, Cambodia",
+        phone: adminPhone,
+        address: adminAddress,
       });
 
-      console.log("🎉 Admin user created!");
+      console.log("Admin user created!");
     } else {
       console.log("Admin user already exists");
     }
 
-    // 3️⃣ Link Admin user to Admin role in UserRole
+    // 3️ Link Admin user to Admin role in UserRole
     const existingUserRole = await userRoleModel.findOne({
       user_id: adminUser._id,
       role_id: adminRole._id,
@@ -65,9 +77,9 @@ async function seedAdmin() {
       console.log("UserRole for Admin user already exists");
     }
 
-    console.log("✅ Admin seeding complete!");
+    console.log("Admin seeding complete!");
   } catch (err) {
-    console.error("❌ Error seeding Admin:", err);
+    console.error("Error seeding Admin:", err);
   } finally {
     if (connection) await mongoose.disconnect();
     process.exit(0);

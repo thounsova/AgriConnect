@@ -22,4 +22,4 @@ const userSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-export const userModel = mongoose.model<IUser>("users", userSchema);
+export const farmerModel = mongoose.model<IUser>("farmers", userSchema);

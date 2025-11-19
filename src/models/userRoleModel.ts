@@ -1,19 +1,20 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
+import mongoose from "mongoose";
 
-export interface IUserRole extends Document {
-  user_id: Types.ObjectId;
-  role_id: Types.ObjectId;
-}
-
-const userRoleSchema = new Schema<IUserRole>(
+const userRoleSchema = new mongoose.Schema(
   {
-    user_id: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    role_id: { type: Schema.Types.ObjectId, ref: "Role", required: true },
+    user_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+      required: true,
+    },
+    role_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "roles",
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-// Ensure combination of user_id + role_id is unique
-userRoleSchema.index({ user_id: 1, role_id: 1 }, { unique: true });
 
-export const userRoleModel = mongoose.model<IUserRole>("UserRole", userRoleSchema);
+export const userRoleModel = mongoose.model("userroles", userRoleSchema);

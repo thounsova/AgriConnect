@@ -14,7 +14,8 @@ declare global {
   }
 }
 
-// Auth middleware
+const JWT_SECRET = process.env.JWT_SECRET!;
+
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
@@ -23,36 +24,34 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     }
 
     const token = authHeader.split(" ")[1];
-    const secretKey = process.env.JWT_ACCESS_SECRET!;
-    const decoded = jwt.verify(token, secretKey) as JwtPayload;
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
 
-    if (!decoded?._id || !decoded?.email || !decoded?.roles) {
-      return handleError(res, 400, "Invalid token");
-    }
-
+    // Accept either _id or userId for legacy tokens
     req.user = {
-      _id: decoded._id as string,
+      _id: (decoded._id || decoded.userId) as string,
       email: decoded.email as string,
       roles: decoded.roles as string[],
     };
 
-    next();
-  } catch (error: any) {
-    if (error instanceof jwt.JsonWebTokenError) {
-      return handleError(res, 401, "Unauthorized: Invalid token");
+    if (!req.user._id || !req.user.email || !req.user.roles) {
+      return handleError(res, 400, "Invalid token payload");
     }
-    console.error("Authentication error:", error);
+
+    next();
+  } catch (err: any) {
+    console.error("Auth error:", err);
+    if (err instanceof jwt.TokenExpiredError) return handleError(res, 401, "Token expired");
+    if (err instanceof jwt.JsonWebTokenError) return handleError(res, 401, "Invalid token");
     return handleError(res, 500, "Internal server error");
   }
 };
 
-// Role middleware
 export const checkRoleMiddleware = (...allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) return handleError(res, 401, "Unauthorized.");
+    if (!req.user) return handleError(res, 401, "Unauthorized");
 
     const hasRole = req.user.roles.some(role => allowedRoles.includes(role));
-    if (!hasRole) return handleError(res, 403, "Access forbidden.");
+    if (!hasRole) return handleError(res, 403, "Access forbidden");
 
     next();
   };

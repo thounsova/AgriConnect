@@ -1,14 +1,7 @@
 import { Request, Response } from "express";
-import { addRoleService, removeRoleService,  } from "@/service/roleService";
+import { addRoleToSelfService } from "@/service/roleService";
 
-// Controller to add a role to a user
+// Controller to add role to logged-in user
 export const addRoleController = async (req: Request, res: Response) => {
-  await addRoleService(req, res);
+  return await addRoleToSelfService(req, res);
 };
-
-// Controller to remove a role from a user
-export const removeRoleController = async (req: Request, res: Response) => {
-  await removeRoleService(req, res);
-};
-
-

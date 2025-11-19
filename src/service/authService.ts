@@ -1,103 +1,118 @@
-import bcrypt from "bcrypt";
 import { Request, Response } from "express";
+import bcrypt from "bcrypt";
 import { userModel } from "../models/userModel";
 import { roleModel } from "../models/roleModel";
 import { userRoleModel } from "../models/userRoleModel";
 import { generateTokens } from "../utils/token";
-import { setAuthCookies, clearAuthCookies } from "../utils/cookie";
+import {setAuthCookies} from "../utils/cookie";
 
-// REGISTER USER
+// REGISTER (All users → Customer)
 export const addUserService = async (req: Request, res: Response) => {
   try {
-    const { full_name, email, password, phone, address, roles } = req.body;
+    const { full_name, email, password, phone, address } = req.body;
 
+    // Check if user exists
     const existingUser = await userModel.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "Email already exists" });
+    if (existingUser) return res.status(400).json({ message: "User already exists" });
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await userModel.create({
-      full_name,
-      email,
-      password: hashedPassword,
-      phone,
-      address,
-      status: "active",
-    });
+    // Create user
+    const newUser = await userModel.create({ full_name, email, password: hashedPassword, phone, address });
 
-    // Assign roles (default Customer)
-    let roleDocs;
-    if (roles && roles.length > 0) {
-      roleDocs = await roleModel.find({ name: { $in: roles } });
-    } else {
-      const defaultRole = await roleModel.findOne({ name: "Customer" });
-      if (!defaultRole)
-        return res.status(500).json({ message: "Default role 'Customer' not found" });
-      roleDocs = [defaultRole];
+    // Assign role automatically
+    const role = await roleModel.findOne({ name: "Customer" });
+    if (role) {
+      await userRoleModel.create({ user_id: newUser._id, role_id: role._id });
     }
 
-    await Promise.all(
-      roleDocs.map(async (role) => {
-        await userRoleModel.updateOne(
-          { user_id: newUser._id, role_id: role._id },
-          { user_id: newUser._id, role_id: role._id },
-          { upsert: true }
-        );
-      })
-    );
+    // Get roles for token
+    const roles = role ? [role.name] : ["Customer"];
 
-    const roleNames = roleDocs.map((r) => r.name);
-
-    const token = generateTokens(newUser._id.toString(), newUser.email, roleNames);
-    setAuthCookies(res, token.accessToken, token.refreshToken);
-
-    return res.status(201).json({
-      message: "User registered successfully",
-      user: { _id: newUser._id, full_name, email, phone, address, roles: roleNames },
-      token,
+    // Generate JWT tokens
+    const { accessToken, refreshToken } = generateTokens({
+      userId: newUser._id.toString(),
+      email: newUser.email,
+      roles,
     });
-  } catch (error: any) {
-    console.error(error);
-    return res.status(500).json({ message: `Registration failed: ${error.message}` });
+
+    // Set tokens in HttpOnly cookies
+    setAuthCookies(res, accessToken, refreshToken); 
+
+
+    // Prepare response data (exclude password)
+    const userResponse = {
+      id: newUser._id,
+      full_name: newUser.full_name,
+      email: newUser.email,
+      phone: newUser.phone,
+      address: newUser.address,
+      roles,
+    };
+
+    // Return user data + tokens
+    res.status(201).json({
+      message: "User registered successfully",
+      user: userResponse,
+      accessToken,
+     
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-// LOGIN USER
-export const loginUserService = async (req: Request, res: Response) => {
+// LOGIN (All users)
+export const loginService = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ message: "Email and password required" });
 
+    // Find user
     const user = await userModel.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) return res.status(401).json({ message: "Invalid credentials" });
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    const userRoles = await userRoleModel.find({ user_id: user._id }).populate("role_id", "name");
-    const roleNames = userRoles.map((r: any) => r.role_id.name);
+    // Get user roles
+    const userRoles = await userRoleModel.find({ user_id: user._id }).populate("role_id");
+    const roles = userRoles.map((ur) => (ur.role_id as any).name);
 
-    const token = generateTokens(user._id.toString(), user.email, roleNames);
-    setAuthCookies(res, token.accessToken, token.refreshToken);
-
-    return res.status(200).json({
-      message: "Login successful",
-      user: { _id: user._id, full_name: user.full_name, email, phone: user.phone, address: user.address, roles: roleNames },
-      token,
+    // Generate JWT tokens
+    const { accessToken, refreshToken } = generateTokens({
+      userId: user._id.toString(),
+      email: user.email,
+      roles,
     });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Login failed" });
+    // Set tokens in HttpOnly cookies
+    setAuthCookies(res, accessToken, refreshToken);
+
+    // Prepare response data (exclude password)
+    const userResponse = {
+      id: user._id,
+      full_name: user.full_name,
+      email: user.email,
+      phone: user.phone,
+      address: user.address,
+      roles,
+    };
+
+    // Return user data + tokens
+    res.status(200).json({
+      message: "Login successful",
+      user: userResponse,
+      accessToken,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-// LOGOUT USER
-export const logoutUserService = async (req: Request, res: Response) => {
-  try {
-    clearAuthCookies(res);
-    return res.status(200).json({ message: "Logout successful" });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Logout failed" });
-  }
-};
+
+
+   
+
