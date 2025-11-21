@@ -7,10 +7,12 @@ import dotenv from "dotenv";
 
 import connectDB from "@/config/database";
 import { swaggerOptions } from "@/swagger";
-
+import  categoryRoute from "@/routes/categoryRoute";
 import authRoute from "@/routes/authRoutes";
+import assginRoute from "@/routes/assginRole";
+import farmerRoute from "@/routes/farmerRoute";
 import productRoute from "@/routes/productRoute";
-// import userRoute from "@/routes/userRoute";
+import userRoute from "@/routes/userRoute";
 
 dotenv.config();
 
@@ -25,7 +27,7 @@ app.use(cors());
 // Connect to MongoDB
 connectDB()
   .then(() => {
-    console.log("✅ Database connected");
+    console.log(" Database connected");
 
     // Swagger setup
     const swaggerSpec = swaggerJSDoc(swaggerOptions);
@@ -33,7 +35,11 @@ connectDB()
 
     // Routes
     app.use("/api", authRoute);
+    app.use("/api/category", categoryRoute);
+    app.use("/api/admin", assginRoute);
+    app.use("/api", farmerRoute);
     app.use("/api/product", productRoute);
+    app.use("/api", userRoute);
 
     // Start server
     app.listen(PORT, () => {

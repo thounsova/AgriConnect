@@ -5,6 +5,7 @@ import { roleModel } from "../models/roleModel";
 import { userRoleModel } from "../models/userRoleModel";
 import { generateTokens } from "../utils/token";
 import {setAuthCookies} from "../utils/cookie";
+import { FarmerModel } from "../models/farmerModel";
 
 // REGISTER (All users → Customer)
 export const addUserService = async (req: Request, res: Response) => {
@@ -77,9 +78,15 @@ export const loginService = async (req: Request, res: Response) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    // Get user roles
+    // Get user roles from userRoleModel
     const userRoles = await userRoleModel.find({ user_id: user._id }).populate("role_id");
     const roles = userRoles.map((ur) => (ur.role_id as any).name);
+
+    // ✅ Check if user has a Farmer record and add "Farmer" role if missing
+    const hasFarmerRecord = await FarmerModel.findOne({ user_id: user._id });
+    if (hasFarmerRecord && !roles.includes("Farmer")) {
+      roles.push("Farmer");
+    }
 
     // Generate JWT tokens
     const { accessToken, refreshToken } = generateTokens({
@@ -87,10 +94,11 @@ export const loginService = async (req: Request, res: Response) => {
       email: user.email,
       roles,
     });
+
     // Set tokens in HttpOnly cookies
     setAuthCookies(res, accessToken, refreshToken);
 
-    // Prepare response data (exclude password)
+    // Prepare response data
     const userResponse = {
       id: user._id,
       full_name: user.full_name,
@@ -106,6 +114,7 @@ export const loginService = async (req: Request, res: Response) => {
       user: userResponse,
       accessToken,
     });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });

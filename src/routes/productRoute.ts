@@ -1,18 +1,18 @@
+// routes/productRoute.ts
 import { Router } from "express";
-import { addProductController } from "@/controller/productController";
-import { authMiddleware } from "@/middleware/authMiddleware";
+import { authMiddleware, checkRoleMiddleware } from "@/middleware/authMiddleware";
+import { createProductController } from "@/controller/productController";
 
-const productRoute = Router();
+const router = Router();
 
 /**
  * @swagger
  * /api/product/create-product:
  *   post:
- *     tags:
- *       - Product
- *     summary: Create a product (auto-promote user to Farmer)
+ *     summary: Create a new product (status defaults to "active")
+ *     tags: [Product]
  *     security:
- *       - BearerAuth: []    # <-- JWT required
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -22,29 +22,26 @@ const productRoute = Router();
  *             properties:
  *               name:
  *                 type: string
- *                 example: Organic Tomato
+ *                 example: Mango
  *               price:
  *                 type: number
- *                 example: 4.5
+ *                 example: 10
  *               stock:
  *                 type: number
  *                 example: 100
- *               category:
+ *               category_id:
  *                 type: string
- *                 example: Vegetable
- *               status:
- *                 type: string
- *                 enum: [active, out of stock]
- *                 example: active
+ *                 example: 64abc123f8a1b2c3d4e5f678
  *     responses:
  *       201:
  *         description: Product created successfully
+ *       400:
+ *         description: Validation error
  *       401:
  *         description: Unauthorized
  *       500:
  *         description: Server error
  */
-productRoute.post("/create-product", authMiddleware, addProductController);
+router.post("/create-product", authMiddleware, createProductController);
 
-
-export default productRoute;
+export default router;

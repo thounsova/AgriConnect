@@ -1,25 +1,25 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
-export interface IUser extends Document {
-  _id: Types.ObjectId;
-  full_name: string;
-  email: string;
-  password: string;
-  phone?: string;
-  address?: string;
-  status: "active" | "inactive";
+export interface FarmerDocument extends Document {
+  user_id: mongoose.Schema.Types.ObjectId;
 }
 
-const userSchema = new Schema<IUser>(
+const farmerSchema = new Schema<FarmerDocument>(
   {
-    full_name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    phone: { type: String },
-    address: { type: String },
-    status: { type: String, enum: ["active", "inactive"], default: "active" }
+    user_id: {
+      type: Schema.Types.ObjectId,
+      ref: "users",
+      required: true,
+      unique: true,
+    },
+    
+
+    
   },
   { timestamps: true }
 );
 
-export const farmerModel = mongoose.model<IUser>("farmers", userSchema);
+export const FarmerModel = mongoose.model<FarmerDocument>(
+  "Farmer",
+  farmerSchema
+);

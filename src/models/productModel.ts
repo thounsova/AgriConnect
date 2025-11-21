@@ -6,37 +6,24 @@ export interface ProductDocument extends Document {
   stock: number;
   category: string;
   status: "active" | "out of stock";
-  user_id: mongoose.Schema.Types.ObjectId;
+  farmer_id: mongoose.Schema.Types.ObjectId;
+  category_id: mongoose.Schema.Types.ObjectId;
 }
 
 const productSchema = new Schema<ProductDocument>(
   {
-    name: {
-      type: String,
+    name: { type: String, required: true },
+    price: { type: Number, required: true },
+    stock: { type: Number, required: true },
+    category_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
       required: true,
     },
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-    stock: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-    category: {
-      type: String,
-      required: true,
-    },
-    status: {
-      type: String,
-      enum: ["active", "out of stock"],
-      default: "active",
-    },
-    user_id: {
+    status: { type: String, default: "active" },
+    farmer_id: {
       type: Schema.Types.ObjectId,
-      ref: "users",       // FK -> USER.id
+      ref: "Farmer",
       required: true,
     },
   },
