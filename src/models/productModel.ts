@@ -17,7 +17,7 @@ const productSchema = new Schema<ProductDocument>(
     stock: { type: Number, required: true },
     category_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      ref: "categories",
       required: true,
     },
     status: { type: String, default: "active" },
