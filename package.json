@@ -7,12 +7,8 @@
     "start": "node dist/server.js",
     "dev": "nodemon",
     "seedRole": "ts-node src/script/seedRole.ts",
-    "seedAdmin": "ts-node src/script/seedAdmin.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "seedAdmin": "ts-node src/script/seedAdmin.ts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.9",
@@ -35,7 +31,6 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "module-alias": "^2.2.3",
     "mongoose": "^8.19.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-dist": "^5.30.2",

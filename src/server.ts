@@ -4,9 +4,7 @@ import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
 import dotenv from "dotenv";
-import "module-alias/register";
 
-// ✅ Use alias from tsconfig paths
 import connectDB from "@/config/database";
 import { swaggerOptions } from "@/swagger";
 import categoryRoute from "@/routes/categoryRoute";
@@ -18,7 +16,7 @@ import userRoute from "@/routes/userRoute";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 5000;
 const app: Application = express();
 
 // Middleware
@@ -29,16 +27,14 @@ app.use(cors());
 // Connect to MongoDB
 connectDB()
   .then(() => {
-    console.log("✅ Database connected");
+    console.log("✅ Database ready");
 
-    // Swagger setup
+    // Swagger
     const swaggerSpec = swaggerJSDoc(swaggerOptions);
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
     // Routes
-    app.get("/", (req, res) => {
-      res.send("Welcome to Agriconnect API");
-    });
+    app.get("/", (req, res) => res.send("Welcome to Agriconnect API"));
     app.use("/api", authRoute);
     app.use("/api/category", categoryRoute);
     app.use("/api/admin", assignRoute);
@@ -46,13 +42,17 @@ connectDB()
     app.use("/api/product", productRoute);
     app.use("/api", userRoute);
 
-    // Start server
+    // 404 Fallback
+    app.use((req, res) => {
+      res.status(404).json({ error: "Route not found" });
+    });
+
     app.listen(PORT, () => {
       console.log(`🚀 Server running at http://localhost:${PORT}`);
       console.log(`📚 Swagger docs at http://localhost:${PORT}/api-docs`);
     });
   })
   .catch((err) => {
-    console.error("❌ Database connection failed:", err);
+    console.error("❌ Failed to start server:", err);
     process.exit(1);
   });
