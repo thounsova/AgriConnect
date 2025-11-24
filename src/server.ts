@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
 import dotenv from "dotenv";
+import 'module-alias/register';
 
 import connectDB from "@/config/database";
 import { swaggerOptions } from "@/swagger";
