@@ -34,6 +34,9 @@ connectDB()
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
     // Routes
+    app.use("/", function(req, res){
+      res.send("Welcome to Agriconect API");
+    })
     app.use("/api", authRoute);
     app.use("/api/category", categoryRoute);
     app.use("/api/admin", assginRoute);
