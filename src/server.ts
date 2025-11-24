@@ -41,11 +41,8 @@ connectDB()
     app.use("/api", farmerRoute);
     app.use("/api/product", productRoute);
     app.use("/api", userRoute);
-
-    // 404 Fallback
-    app.use((req, res) => {
-      res.status(404).json({ error: "Route not found" });
-    });
+   
+    
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running at http://localhost:${PORT}`);
