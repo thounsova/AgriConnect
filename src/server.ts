@@ -4,13 +4,14 @@ import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
 import dotenv from "dotenv";
-import 'module-alias/register';
+import "module-alias/register";
 
+// ✅ Use alias from tsconfig paths
 import connectDB from "@/config/database";
 import { swaggerOptions } from "@/swagger";
-import  categoryRoute from "@/routes/categoryRoute";
+import categoryRoute from "@/routes/categoryRoute";
 import authRoute from "@/routes/authRoutes";
-import assginRoute from "@/routes/assginRole";
+import assignRoute from "@/routes/assginRole";
 import farmerRoute from "@/routes/farmerRoute";
 import productRoute from "@/routes/productRoute";
 import userRoute from "@/routes/userRoute";
@@ -28,19 +29,19 @@ app.use(cors());
 // Connect to MongoDB
 connectDB()
   .then(() => {
-    console.log(" Database connected");
+    console.log("✅ Database connected");
 
     // Swagger setup
     const swaggerSpec = swaggerJSDoc(swaggerOptions);
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
     // Routes
-    app.use("/", function(req, res){
-      res.send("Welcome to Agriconect API");
-    })
+    app.get("/", (req, res) => {
+      res.send("Welcome to Agriconnect API");
+    });
     app.use("/api", authRoute);
     app.use("/api/category", categoryRoute);
-    app.use("/api/admin", assginRoute);
+    app.use("/api/admin", assignRoute);
     app.use("/api", farmerRoute);
     app.use("/api/product", productRoute);
     app.use("/api", userRoute);
