@@ -1,4 +1,4 @@
-import express, { Application } from "express";
+import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
@@ -17,6 +17,7 @@ import userRoute from "@/routes/userRoute";
 dotenv.config();
 
 const PORT = Number(process.env.PORT) || 5000;
+
 const app: Application = express();
 
 // Middleware
@@ -24,25 +25,24 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 
-// Connect to MongoDB
+// Swagger setup
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Routes
+app.get("/", (_req: Request, res: Response) => res.send("Welcome to Agriconnect API"));
+
+app.use("/api", authRoute);
+app.use("/api/category", categoryRoute);
+app.use("/api/admin", assignRoute);
+app.use("/api/farmers", farmerRoute);
+app.use("/api/product", productRoute);
+app.use("/api/users", userRoute);
+
+// Connect to MongoDB and start server
 connectDB()
   .then(() => {
     console.log("✅ Database ready");
-
-    // Swagger
-    const swaggerSpec = swaggerJSDoc(swaggerOptions);
-    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-    // Routes
-    app.get("/", (req, res) => res.send("Welcome to Agriconnect API"));
-    app.use("/api", authRoute);
-    app.use("/api/category", categoryRoute);
-    app.use("/api/admin", assignRoute);
-    app.use("/api", farmerRoute);
-    app.use("/api/product", productRoute);
-    app.use("/api", userRoute);
-   
-    
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running at http://localhost:${PORT}`);
